@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace = "spring.bao.mapper.BidIf">
+
+<select id="getbiCode" resultType="spring.bao.beans.RequestBean">
+      <![CDATA[
+   	SELECT BI_RQCODE AS biCode FROM BI WHERE BI_RQCODE = #{biCode} 
+      ]]>
+   </select>
+   
+   <insert id = "insBi"> 
+<![CDATA[
+   INSERT INTO BI(BI_RQCODE , BI_MMHELPER, BI_PRICE , BI_SYSDATE, BI_STCODE)
+   VALUES(#{biCode},#{biHelper},#{biPrice},SYSDATE, 'M')  
+  ]]>
+ </insert>
+ 
+<!-- 빈두개 리저트타입 안되면 합치는거도 하나의방법 -->
+<select id = "bidList" resultType = "spring.bao.beans.RequestBean">
+    <![CDATA[
+                    SELECT            
+                        BI.BI_PRICE AS biPrice,
+                        BI.BI_MMHELPER AS biMmhelperview ,
+                        BI.BI_STCODE AS biStCode
+                        FROM BI INNER JOIN RQ ON BI.BI_RQCODE = RQ.RQ_CODE
+                        WHERE RQ_CODE = #{rqCode} ORDER BY BI_PRICE ASC
+        ]]>
+ </select>
+
+<insert id = "insBidInfo" > 
+<![CDATA[
+      INSERT INTO WI(WI_RQCODE , WI_HELPER , WI_PRICE)
+      VALUES(#{winRqCode},#{winHelper},#{winPrice})
+  ]]>
+ </insert> 
+ 
+ <update id ="updateAcceptStatus" >
+ <![CDATA[
+         UPDATE BI SET BI_STCODE ='O' WHERE BI_MMHELPER=#{winHelper} AND BI_RQCODE=#{rqCode} AND BI_PRICE=#{winPrice}
+  ]]>
+ 
+ </update>
+ 
+ <update id ="updateRejectStatus" >
+ <![CDATA[
+         UPDATE BI SET BI_STCODE ='U' WHERE BI_MMHELPER !=#{winHelper} AND BI_RQCODE=#{rqCode}
+         
+  ]]>
+ 
+ </update>
+ 
+
+  <update id ="updateEveryRejectStatus" >
+ <![CDATA[
+         UPDATE BI SET BI_STCODE ='U' WHERE BI_RQCODE=#{rqCode} 
+  ]]>
+ 
+ </update>
+ 
+  <select id="rejectMInfo"  resultType = "spring.bao.beans.RequestBean">
+     <![CDATA[
+  SELECT  BI_MMHELPER  AS biMmHelperView FROM BI WHERE BI_RQCODE=#{rqCode} AND BI_STCODE != 'O'
+     ]]>
+  </select>
+  
+  <select id="rejectMInfoStM"  resultType = "spring.bao.beans.RequestBean">
+     <![CDATA[
+  SELECT  BI_MMHELPER  AS biMmHelperView FROM BI WHERE BI_RQCODE=#{rqCode} AND BI_STCODE = 'M'
+     ]]>
+  </select>
+  
+    <select id="rejectMInfoMsg"  resultType = "spring.bao.beans.RequestBean">
+     <![CDATA[
+  SELECT distinct BI_MMHELPER  AS biMmHelperView FROM BI WHERE BI_RQCODE=#{rqCode} AND BI_STCODE != 'O'
+     ]]>
+  </select>
+  
+    <select id="rejectEveryMInfoMsg"  resultType = "spring.bao.beans.RequestBean">
+     <![CDATA[
+   SELECT distinct BI_MMHELPER  AS biMmHelperView FROM BI WHERE BI_RQCODE=#{rqCode} AND BI_STCODE = 'U'
+     ]]>
+  </select>
+  
+
+ <insert id = "insAcceptMsg">
+   
+ <![CDATA[
+ INSERT INTO MS(MS_MMRECIPIENT , MS_MMSENDER , MS_TITLE , MS_COMMENT , MS_SYSDATE , MS_STCODE)
+ VALUES (#{winHelper},#{rqId},'낙찰 되셨습니다  ',' 낙찰 되셨습니다 자세한 내용은 메시지로 문의 부탁 드립니다 .  ',SYSDATE,'N') 
+ ]]>
+ </insert>
+           
+       
+<insert id = "insRejectMsg">
+ <![CDATA[
+ INSERT INTO MS(MS_MMRECIPIENT,MS_MMSENDER,MS_TITLE,MS_COMMENT,MS_SYSDATE,MS_STCODE) 
+VALUES(#{biMmHelper},#{rqId},'유찰되었습니다.','유찰 되셨습니다 안타깝습니다 다음 기회에 또 입찰 부탁 드립니다. ',SYSDATE,'N')
+ ]]>
+ </insert>           
+
+<select id = "reqMmid" resultType = "spring.bao.beans.RequestBean">
+ <![CDATA[
+   SELECT RQ_MMID AS RQID FROM RQ WHERE RQ_MMID =#{rqId}   
+]]>
+</select>
+
+
+
+  <update id ="updateAcceptRqStatus" >
+ <![CDATA[
+         UPDATE RQ SET RQ_STCODE ='I' WHERE RQ_CODE=#{rqCode} 
+  ]]>
+ 
+ </update>
+ 
+ <update id ="updateRejectRqStatus" >
+ <![CDATA[
+         UPDATE RQ SET RQ_STCODE ='E' WHERE RQ_CODE=#{rqCode} 
+  ]]>
+ 
+ </update>
+
+
+
+
+
+</mapper>

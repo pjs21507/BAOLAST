@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="spring.bao.mapper.RequestDealIf">
+<select id="isBidder" resultType="int">
+		<![CDATA[
+		SELECT COUNT(*) FROM BI WHERE BI_MMHELPER = #{biHelper} AND BI_RQCODE = #{biCode}
+		]]> 
+	</select>
+	
+	<insert id="insReqSend">
+		INSERT INTO RQ(RQ_CODE, RQ_MMID, RQ_TITLE, RQ_COMMENT, RQ_FILTERCODE, RQ_SUBCODE, RQ_PERIOD, RQ_SYSDATE, RQ_STCODE, RQ_RCCODE)
+		VALUES(#{rqFilterCode}||TO_CHAR(SYSDATE,'YYMMDDHHMMSS'),#{rqId},#{rqTitle},#{rqComment},#{rqFilterCode},#{rqSubCode},#{rqPeriod},SYSDATE,#{rqStatus},#{rqRcCode})
+	</insert>
+	
+<!-- 	<insert id="insReq" > -->
+<!-- 		INSERT INTO RQ(RQ_CODE, RQ_MMID, RQ_TITLE, RQ_COMMENT, RQ_FILTERCODE, RQ_SUBCODE, RQ_PERIOD, RQ_SYSDATE, RQ_STCODE, RQ_RCCODE) -->
+<!-- 		VALUES(#{rqFilterCode} || ,#{rqId},#{rqTitle},#{rqCommnet},#{rqFilterCode},#{rqSubCode},#{rqPeriod},SYSDATE,#{rqStCode},#{rqRcCode}) -->
+<!-- 	</insert> -->
+	
+	<select id="getReqDetail" resultType="spring.bao.beans.RequestBean">
+			<![CDATA[
+			          SELECT 		
+							RQ_RCCODE AS RQRCCODE,
+							RQ_RCCODE AS RQRCCODE,
+							MG_FILTERNAME RQFILTERNAME,
+							SG_SUBNAME AS RQSUBNAME,
+							RQ_PERIOD AS RQPERIOD,
+							RQ_TITLE AS RQTITLE,
+							RQ_COMMENT AS RQCOMMENT
+					FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+					        INNER JOIN SG SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+					WHERE RQ_CODE = #{rqCode} AND RQ_MMID = #{rqId}
+			]]> 
+	</select>
+	
+	<update id="updateReqDetail">
+		UPDATE RQ SET
+   RQ_RCCODE = #{rqRcCode},
+   RQ_PERIOD = #{rqPeriod},
+   RQ_TITLE = #{rqTitle},
+   RQ_COMMENT = #{rqComment} 
+WHERE RQ_MMID = #{rqId} AND RQ_CODE = #{rqCode}
+
+	</update>
+	
+	<delete id="deleteReqDetail">
+		DELETE FROM RQ  WHERE RQ_CODE = #{rqCode} AND RQ_MMID = #{rqId}
+	</delete>
+		
+</mapper>

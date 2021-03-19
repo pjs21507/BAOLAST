@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="spring.bao.mapper.ReviewIf">
+
+   
+   <select id="getReview" resultType="spring.bao.beans.ReviewBean">
+   <![CDATA[
+      SELECT RV_WIRQCODE AS RVWIRQCODE, RV_WIHELPER AS RVHELPER, RV_STAR AS RVSTAR, RV_COMMENT AS RVCOMMENT FROM RV WHERE RV_WIHELPER = #{rvHelper} AND RV_WIRQCODE = #{rvWirqCode}
+    ]]>
+   </select>
+   
+   <select id="getCH" resultType="spring.bao.beans.BidBean">
+   <![CDATA[
+      SELECT WI_RQCODE as WIRQCODE, WI_HELPER as WIHELPER FROM WI WHERE WI_RQCODE = #{wiRqCode} AND WI_HELPER = #{wiHelper}
+    ]]>
+   </select>
+   
+   <insert id ="insReview" >
+   <![CDATA[
+      INSERT INTO RV(RV_WIRQCODE, RV_WIHELPER, RV_STAR, RV_COMMENT) VALUES(#{rvWirqCode}, #{rvHelper}, #{rvStar}, #{rvComment})
+   ]]>
+   </insert>
+   
+   <select id ="isReview" resultType="int">
+   <![CDATA[
+      SELECT COUNT (*) RV_WIRQCODE  FROM RV WHERE RV_WIRQCODE = #{rvWirqCode}
+    ]]>
+   </select >
+
+</mapper>

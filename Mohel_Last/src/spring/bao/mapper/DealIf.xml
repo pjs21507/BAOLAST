@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="spring.bao.mapper.DealIf">
+
+
+
+    <select id="filterList" resultType="spring.bao.beans.RequestBean">
+      <![CDATA[
+      SELECT
+      RQ.RQ_MMID AS rqId,
+         RQ.RQ_CODE AS rqCode,
+         RQ.RQ_FILTERCODE AS rqFilterCode,
+         RQ.RQ_PERIOD AS  rqPeriod,
+         RQ.RQ_TITLE AS rqTitle,
+         SG.SG_SUBNAME AS rqSubName,
+         MG.MG_IMG AS rqImage,
+         ST.ST_CODE AS rqStatus
+         FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+           INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+           INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+           WHERE RQ.RQ_FILTERCODE= ${rqFilterCode} AND RQ.RQ_STCODE = 'B'
+           ORDER BY RQ.RQ_SYSDATE DESC
+      ]]>
+   </select>
+   
+   <select id="BestFilterList" resultType="spring.bao.beans.RequestBean">
+      <![CDATA[
+      SELECT
+      	RQ.RQ_MMID AS rqId,
+         RQ.RQ_CODE AS rqCode,
+         RQ.RQ_FILTERCODE AS rqFilterCode,
+         RQ.RQ_PERIOD AS  rqPeriod,
+         RQ.RQ_TITLE AS rqTitle,
+         SG.SG_SUBNAME AS rqSubName,
+         MG.MG_IMG AS rqImage,
+            COUNT(BI.BI_MMHELPER) AS rqBest,
+         ST.ST_CODE AS rqStatus
+            
+         FROM RQ 
+            INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+           INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+           INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+            LEFT JOIN BI ON RQ.RQ_CODE = BI.BI_RQCODE
+           WHERE RQ.RQ_FILTERCODE= ${rqFilterCode} AND RQ.RQ_STCODE = 'B'
+            GROUP BY RQ.RQ_CODE, RQ.RQ_FILTERCODE, RQ.RQ_PERIOD, RQ.RQ_TITLE, 
+                     SG.SG_SUBNAME, MG.MG_IMG, ST.ST_CODE, RQ.RQ_MMID
+            ORDER BY COUNT(BI.BI_MMHELPER) DESC
+      ]]>
+   </select>
+   
+   <select id="allSearchList" resultType="spring.bao.beans.RequestBean">
+      <![CDATA[
+      SELECT
+      	RQ.RQ_MMID AS rqId,
+         RQ.RQ_CODE AS rqCode,
+         RQ.RQ_FILTERCODE AS rqFilterCode,
+         RQ.RQ_PERIOD AS  rqPeriod,
+         RQ.RQ_TITLE AS rqTitle,
+         SG.SG_SUBNAME AS rqSubName,
+         MG.MG_IMG AS rqImage,
+         ST.ST_CODE AS rqStatus
+         FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+           INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+           INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+           WHERE RQ.RQ_STCODE = 'B'
+           ORDER BY RQ.RQ_SYSDATE DESC
+      ]]>
+   </select>
+   
+   <select id="BestallSearchList" resultType="spring.bao.beans.RequestBean">
+      <![CDATA[
+      SELECT
+      	RQ.RQ_MMID AS rqId,
+         RQ.RQ_CODE AS rqCode,
+         RQ.RQ_FILTERCODE AS rqFilterCode,
+         RQ.RQ_PERIOD AS  rqPeriod,
+         RQ.RQ_TITLE AS rqTitle,
+         SG.SG_SUBNAME AS rqSubName,
+         MG.MG_IMG AS rqImage,
+      COUNT(BI.BI_MMHELPER) AS rqBest,
+         ST.ST_CODE AS rqStatus
+         FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+           INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+           INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+            LEFT JOIN BI ON RQ.RQ_CODE = BI.BI_RQCODE
+           WHERE RQ.RQ_STCODE = 'B'
+            group by RQ.RQ_CODE, RQ.RQ_FILTERCODE, RQ.RQ_PERIOD, RQ.RQ_TITLE, SG.SG_SUBNAME, 
+                     MG.MG_IMG, ST.ST_CODE,  RQ.RQ_MMID
+           ORDER BY COUNT(BI.BI_MMHELPER) DESC
+      ]]>
+   </select>
+
+    <select id="searchList" resultType="spring.bao.beans.RequestBean">
+      <![CDATA[
+      SELECT
+      	RQ.RQ_MMID AS rqId,
+         RQ.RQ_CODE AS rqCode,
+         RQ.RQ_FILTERCODE AS rqFilterCode,
+         RQ.RQ_PERIOD AS  rqPeriod,
+         RQ.RQ_TITLE AS rqTitle,
+         SG.SG_SUBNAME AS rqSubName,
+         MG.MG_IMG AS rqImage,
+         ST.ST_CODE AS rqStatus
+         FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+           INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+           INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+           WHERE RQ.RQ_STCODE = 'B' AND RQ.RQ_TITLE LIKE '%'||#{rqWord}||'%' OR SG.SG_SUBNAME LIKE '%'||#{rqWord}||'%'  
+           ORDER BY RQ.RQ_SYSDATE DESC       
+      ]]>
+   </select>
+   
+    <select id="BestSearchList" resultType="spring.bao.beans.RequestBean">
+      <![CDATA[
+      SELECT
+      	RQ.RQ_MMID AS rqId,
+         RQ.RQ_CODE AS rqCode,
+         RQ.RQ_FILTERCODE AS rqFilterCode,
+         RQ.RQ_PERIOD AS  rqPeriod,
+         RQ.RQ_TITLE AS rqTitle,
+         SG.SG_SUBNAME AS rqSubName,
+         MG.MG_IMG AS rqImage,
+      COUNT(BI.BI_MMHELPER) AS rqBest,
+         ST.ST_CODE AS rqStatus
+         FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+           INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+           INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+            LEFT JOIN BI ON RQ.RQ_CODE = BI.BI_RQCODE
+           WHERE RQ.RQ_STCODE = 'B' AND RQ.RQ_TITLE LIKE '%'||#{rqWord}||'%' OR SG.SG_SUBNAME LIKE '%'||#{rqWord}||'%' 
+            GROUP BY RQ.RQ_CODE, RQ.RQ_FILTERCODE, RQ.RQ_PERIOD, RQ.RQ_TITLE, SG.SG_SUBNAME, 
+                     MG.MG_IMG, ST.ST_CODE , RQ.RQ_MMID 
+           ORDER BY COUNT(BI.BI_MMHELPER) DESC      
+      ]]>
+   </select>
+   
+     <select id="getWwisherList" resultType="spring.bao.beans.RequestBean">
+      <![CDATA[
+      SELECT
+         RQ.RQ_MMID AS rqId,
+         RQ.RQ_CODE AS rqCode,
+         RQ.RQ_PERIOD AS rqPeriod,
+         RQ.RQ_TITLE AS rqTitle,
+         SG.SG_SUBNAME AS rqSubName,
+         TO_CHAR(RQ.RQ_SYSDATE,'YYYY-MM-DD') AS rqDate,
+         MG.MG_IMG AS rqImage,
+         
+         ST.ST_CODE AS rqStatus
+   FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+           INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+           INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+         WHERE RQ.RQ_MMID = #{rqId} AND RQ.RQ_STCODE = 'B'
+         ORDER BY RQ.RQ_SYSDATE DESC
+      ]]>
+   </select>
+   
+     <select id="getWhelperList" resultType="spring.bao.beans.RequestBean">
+      <![CDATA[
+      SELECT
+            BI.BI_MMHELPER AS biHelper,
+         RQ.RQ_CODE AS rqCode,
+         RQ.RQ_PERIOD AS  rqPeriod,
+         RQ.RQ_TITLE AS rqTitle,
+         SG.SG_SUBNAME AS rqSubName,
+         MG.MG_IMG AS rqImage,
+         TO_CHAR(RQ.RQ_SYSDATE,'YYYY-MM-DD') AS rqDate,
+         ST.ST_CODE AS rqStatus
+   FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+            INNER JOIN BI ON RQ.RQ_CODE = BI.BI_RQCODE
+           INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+           INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+         WHERE BI.BI_MMHELPER = #{biHelper} AND RQ.RQ_STCODE='B'
+         ORDER BY RQ.RQ_SYSDATE DESC
+      ]]>
+   </select>
+   
+     <select id="getIngWisherList" resultType="spring.bao.beans.RequestBean">
+         <![CDATA[
+          SELECT
+         RQ.RQ_MMID AS rqId,
+         RQ.RQ_CODE AS rqCode,
+         RQ.RQ_PERIOD AS  rqPeriod,
+         RQ.RQ_TITLE AS rqTitle,
+         SG.SG_SUBNAME AS rqSubName,
+         TO_CHAR(RQ.RQ_SYSDATE,'YYYY-MM-DD') AS rqDate,
+         MG.MG_IMG AS rqImage,
+         ST.ST_CODE AS rqStatus
+   FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+           INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+           INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+         WHERE RQ.RQ_MMID = #{rqId} AND RQ.RQ_STCODE = 'I'
+         ORDER BY RQ.RQ_SYSDATE DESC
+      ]]>
+   </select>
+   
+    <select id="getIngHelperList" resultType="spring.bao.beans.RequestBean">
+      <![CDATA[
+      SELECT
+            WI.WI_HELPER AS winHelper,
+         RQ.RQ_CODE AS rqCode,
+         RQ.RQ_PERIOD AS  rqPeriod,
+         RQ.RQ_TITLE AS rqTitle,
+         SG.SG_SUBNAME AS rqSubName,
+         TO_CHAR(RQ.RQ_SYSDATE,'YYYY-MM-DD') AS rqSimpleDate,
+         MG.MG_IMG AS rqImage,
+         ST.ST_CODE AS rqStatus
+   FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+            INNER JOIN WI ON RQ.RQ_CODE = WI.WI_RQCODE
+           INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+           INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+         WHERE WI.WI_HELPER = #{winHelper} AND RQ.RQ_STCODE='I'
+         ORDER BY RQ.RQ_SYSDATE DESC
+      ]]>
+   </select>
+   
+   <select id="getEndWisherList" resultType="spring.bao.beans.RequestBean">
+         <![CDATA[
+          SELECT
+         RQ.RQ_MMID AS rqId,
+         RQ.RQ_CODE AS rqCode,
+         RQ.RQ_PERIOD AS  rqPeriod,
+         RQ.RQ_TITLE AS rqTitle,
+         SG.SG_SUBNAME AS rqSubName,
+         TO_CHAR(RQ.RQ_SYSDATE,'YYYY-MM-DD') AS rqDate,
+         MG.MG_IMG AS rqImage,
+         ST.ST_CODE AS rqStatus
+   FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+           INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+           INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+         WHERE RQ.RQ_MMID = #{rqId} AND RQ.RQ_STCODE = 'E'
+         ORDER BY RQ.RQ_SYSDATE DESC
+      ]]>
+   </select>
+
+    <select id="getEndHelperList" resultType="spring.bao.beans.RequestBean">
+      <![CDATA[
+      SELECT
+            WI.WI_HELPER AS winHelper,
+         RQ.RQ_CODE AS rqCode,
+         RQ.RQ_PERIOD AS  rqPeriod,
+         RQ.RQ_TITLE AS rqTitle,
+         SG.SG_SUBNAME AS rqSubName,
+         TO_CHAR(RQ.RQ_SYSDATE,'YYYY-MM-DD') AS rqSimpleDate,
+         MG.MG_IMG AS rqImage,
+         ST.ST_CODE AS rqStatus
+   FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+            INNER JOIN WI ON RQ.RQ_CODE = WI.WI_RQCODE
+           INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+           INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+         WHERE WI.WI_HELPER = #{winHelper} AND RQ.RQ_STCODE='E'
+         ORDER BY RQ.RQ_SYSDATE DESC
+      ]]>
+   </select>
+    <select id="getDetail" resultType="spring.bao.beans.RequestBean">
+      <![CDATA[
+      SELECT
+            RQ.RQ_TITLE AS rqTitle,  
+            RQ.RQ_CODE AS rqCode,
+            RQ.RQ_MMID AS RqId,
+            MG.MG_IMG AS rqImage,
+            TO_CHAR(RQ_SYSDATE, 'YYYY-MM-DD') AS rqDate,
+         RQ.RQ_PERIOD AS  rqPeriod,
+         SG.SG_SUBNAME AS rqSubName,
+            RC.RC_NAME AS rqRcName,
+            RQ.RQ_COMMENT AS rqComment,
+            
+         ST.ST_CODE AS rqStatus
+   FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+            
+           INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+           INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+            INNER JOIN RC ON RQ.RQ_RCCODE = RC.RC_CODE
+    WHERE RQ.RQ_CODE = #{rqCode}
+      ]]>
+   </select>
+   
+   <select id="getDetailAD" resultType="spring.bao.beans.RequestBean">
+      <![CDATA[
+      SELECT
+            RQ.RQ_TITLE AS rqTitle,  
+            RQ.RQ_CODE AS rqCode,
+            MG.MG_IMG AS rqImage,
+            TO_CHAR(RQ.RQ_SYSDATE,'YYYY-MM-DD') AS rqSimpleDate,
+         RQ.RQ_PERIOD AS  rqPeriod,
+         SG.SG_SUBNAME AS rqSubName,
+            RC.RC_NAME AS rqRcName,
+            RQ.RQ_COMMENT AS rqComment,
+         ST.ST_CODE AS rqStatus
+   FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+           INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+           INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+            INNER JOIN RC ON RQ.RQ_RCCODE = RC.RC_CODE
+    WHERE RQ.RQ_CODE = #{rqCode}
+      ]]>
+   </select>
+   
+    <select id = "getReq" resultType = "spring.bao.beans.RequestBean">
+    <![CDATA[
+             SELECT RQ_CODE AS rqCode FROM RQ WHERE RQ_CODE = #{rqCode}
+              ]]>
+ </select>
+ 
+ <select id = "getReq2" resultType = "spring.bao.beans.MemberBean">
+    <![CDATA[
+             SELECT AL_MMID AS alMmid FROM AL WHERE AL_MMID = #{alMmid} AND AL_STCODE ='1'
+              ]]>
+ </select>
+ 
+<!-- 빈두개 리저트타입 안되면 합치는거도 하나의방법 -->
+<select id = "bidList" resultType = "spring.bao.beans.RequestBean">
+    <![CDATA[
+                    SELECT            
+                        BI.BI_PRICE AS biPrice,
+                        BI.BI_MMHELPER AS biMmHelperview
+                        FROM BI INNER JOIN RQ ON BI.BI_RQCODE = RQ.RQ_CODE
+                        WHERE RQ_CODE = #{rqCode} ORDER BY BI_PRICE ASC
+        ]]>
+ </select>
+    
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper	namespace="spring.bao.mapper.MessageIf">
+<!-- QUERY에 포함된 문자중 < > & || 등이 있다면 xml 파싱을 하지 않도록  -->
+	<select	id="getRecList" resultType="spring.bao.beans.MessageBean">
+		<![CDATA[
+	SELECT MS_MMRECIPIENT AS MSRECIPIENT,
+        MS_MMSENDER AS MSSENDER,
+        MS_TITLE AS MSTITLE,
+        MS_COMMENT AS MSCOMMENT,
+        MS_SYSDATE AS MSDATE,
+        MS_STCODE AS MSSTATUS,
+        NVL(MM_EMAIL,' ') AS MEMAIL,
+        NVL(MM_CAREER,' ') AS MCAREER,
+        NVL(MM_DIVISION,' ') AS MDIVISION ,
+        NVL(MM_RCCODE,' ') AS MRCCODE,
+        NVL(RC_NAME,' ') AS MRCNAME
+	FROM MS INNER JOIN MM ON MS.MS_MMRECIPIENT = MM.MM_ID
+            LEFT OUTER JOIN RC ON MM_RCCODE=RC_CODE
+    WHERE MS_MMRECIPIENT=#{msRecipient}
+	ORDER BY MS_SYSDATE DESC
+		]]>
+	
+	</select>
+	
+	<select	id="getSendList" resultType="spring.bao.beans.MessageBean">
+		<![CDATA[
+	SELECT MS_MMRECIPIENT AS MSRECIPIENT,
+        MS_MMSENDER AS MSSENDER,
+        MS_TITLE AS MSTITLE,
+        MS_COMMENT AS MSCOMMENT,
+        MS_SYSDATE AS MSDATE,
+        MS_STCODE AS MSSTATUS,
+        NVL(MM_EMAIL,' ') AS MEMAIL,
+        NVL(MM_CAREER,' ') AS MCAREER,
+        NVL(MM_DIVISION,' ') AS MDIVISION ,
+        NVL(MM_RCCODE,' ') AS MRCCODE,
+        NVL(RC_NAME,' ') AS MRCNAME
+    FROM MS INNER JOIN MM ON MS.MS_MMRECIPIENT = MM.MM_ID
+            LEFT OUTER JOIN RC ON MM_RCCODE=RC_CODE
+    WHERE MS_MMSENDER=#{msSender}
+	ORDER BY MS_SYSDATE DESC
+		]]>
+	</select>
+	
+	<select	id="getMsgDetail" resultType="spring.bao.beans.MessageBean">
+		<![CDATA[
+	SELECT MS_MMRECIPIENT AS MSRECIPIENT,
+        MS_MMSENDER AS MSSENDER,
+        MS_TITLE AS MSTITLE,
+        MS_COMMENT AS MSCOMMENT,
+        MS_SYSDATE AS MSDATE,
+        MS_STCODE AS MSSTATUS 
+	FROM MS WHERE MS_MMSENDER= #{msSender} AND MS_MMRECIPIENT= #{msRecipient} AND TO_CHAR(MS_SYSDATE,'YYYY-MM-DD HH24:MI:SS')= #{msDate} 
+		]]>
+	</select>
+	
+	<insert	id="insMessage" >
+		<![CDATA[
+	INSERT INTO MS(MS_MMRECIPIENT,MS_MMSENDER,MS_TITLE,MS_COMMENT,MS_SYSDATE,MS_STCODE) 
+	VALUES (#{msRecipient},#{msSender},#{msTitle},#{msComment},SYSDATE,'N')
+		]]>
+	</insert>
+	
+	<update id="updateStatus" >
+		<![CDATA[
+	UPDATE MS SET MS_STCODE='Y' WHERE MS_MMRECIPIENT=#{msRecipient} AND MS_MMSENDER=#{msSender} AND TO_CHAR(MS_SYSDATE,'YYYY-MM-DD HH24:MI:SS')=#{msDate} 
+		]]>
+	</update>
+	
+	
+	
+</mapper>

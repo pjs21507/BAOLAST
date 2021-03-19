@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="spring.bao.mapper.AuthenticationIf">
+	
+	<select id="isMember" resultType="Int">
+		SELECT COUNT(*) FROM MM WHERE MM_ID = #{mId}
+	</select>
+
+	<insert id ="insMember" >
+		INSERT INTO MM(MM_ID,MM_NAME,MM_PW,MM_EMAIL,MM_CAREER,MM_DIVISION) VALUES(#{mId},#{mName},#{mPw},'','','')
+	</insert>
+	
+	<select id="isAccess" resultType="spring.bao.beans.MemberBean">
+   <![CDATA[
+      SELECT MM_PW AS MPW FROM MM WHERE MM_ID = #{mId}
+   ]]>
+   </select>
+	
+	<insert id ="insAccess" >
+		INSERT INTO AL(AL_MMID, AL_STCODE, AL_ACCESS) VALUES(#{mId},#{mStCode},SYSDATE)
+	</insert>
+	
+	<select id="getRecentList" resultType="spring.bao.beans.RequestBean">
+   <![CDATA[
+     SELECT
+                             RQ.RQ_CODE AS rqCode,
+                             RQ.RQ_FILTERCODE AS rqFilterCode,
+                             RQ.RQ_MMID AS rqId,
+                             RQ.RQ_PERIOD AS  rqPeriod,
+                             RQ.RQ_TITLE AS rqTitle,
+                             SG.SG_SUBNAME AS rqSubName,
+                             MG.MG_IMG AS rqImage,
+                             ST.ST_CODE AS rqStatus,
+                             RQ.RQ_SYSDATE AS RQSYSDATE
+                             FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+                               INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+                               INNER JOIN ST ON RQ.RQ_STCODE = ST.ST_CODE
+                               WHERE RQ.RQ_STCODE = 'B'
+                               ORDER BY RQ.RQ_SYSDATE DESC
+    ]]>
+   </select>
+   
+	<resultMap type="RequestBean" id="RequestBean">
+          <id column="RQ_CODE" property="rqCode"/>
+          <id column="SG_SUBNAM" property="rqSubName"/>
+          <id column="RQ_TITLE" property="rqTitle"/>
+          <id column="MG_IMG" property="rqImage"/>
+          <id column="RQ_PERIOD" property="rqDate"/>  
+          
+        <association property="bidBean"  javaType="BidBean" >
+             <id property="winHelper"  column="BI_MMHELPER" />
+        </association>
+   </resultMap>
+
+   <select id="getRecentList2" parameterType="RequestBean" resultType="RequestBean">
+   <![CDATA[
+      SELECT 
+      RQ.RQ_MMID AS rqId,
+      RQ.RQ_CODE AS RQCODE,
+      SG.SG_SUBNAME AS RQSUBNAME,
+      RQ.RQ_TITLE AS RQTITLE,
+      MG.MG_IMG AS RQIMAGE,
+      RQ.RQ_PERIOD AS RQDATE,
+      COUNT(BI.BI_MMHELPER) AS RQBEST
+      FROM RQ INNER JOIN MG ON RQ.RQ_FILTERCODE = MG.MG_FILTERCODE
+                INNER JOIN SG ON RQ.RQ_SUBCODE = SG.SG_SUBCODE
+                LEFT JOIN BI ON RQ.RQ_CODE = BI.BI_RQCODE
+                GROUP BY RQ.RQ_CODE,RQ.RQ_TITLE, RQ.RQ_PERIOD, SG.SG_SUBNAME, MG.MG_IMG, RQ.RQ_MMID
+                ORDER BY  COUNT(BI.BI_MMHELPER) DESC
+ 
+    ]]>
+   </select>
+	
+</mapper>

@@ -1,0 +1,127 @@
+/* Global */
+:root {
+  /* Color */
+  --color-white: #ffffff;
+  --color-dark-white: #dadada;
+  --color-blue: #2163e8;
+  --color-light-grey: #a1a1a1;
+  --color-grey: #7c7979;
+  --color-dark-grey: #4d4d4d;
+
+  /* Font size */
+  --font-small: 15px;
+  --font-micro: 14px;
+
+  /* Font weight */
+  --weight-bold: 700;
+
+  /* Size */
+  --spacing-large: 50px;
+  --spacing-medium: 30px;
+  --spacing-small: 15px;
+}
+
+/* Universal tags */
+* {
+  box-sizing: border-box;
+}
+body {
+  font-family: "Open Sans", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+}
+input,
+button {
+  /* width: 100%; */
+  height: 50px;
+  border: 1px solid var(--color-dark-white);
+  cursor: pointer;
+}
+button {
+  background-color: var(--color-blue);
+  color: var(--color-white);
+  border-color: var(--color-blue);
+  width: 100%;
+  outline: none;
+}
+input:focus {
+  outline: none;
+  border-color: var(--color-blue);
+}
+a {
+  text-decoration: none;
+  cursor: pointer;
+}
+/* Header */
+#head {
+  padding: calc(var(--spacing-large) * 2) 0 var(--spacing-large);
+}
+.head__logo {
+  width: 240px;
+  height: 80px;
+}
+
+/* Section */
+#contents {
+  width: 460px;
+  padding-bottom: var(--spacing-large);
+}
+.contents__login,
+.contents__join {
+  display: flex;
+  flex-direction: column;
+}
+.contents-id,
+.contents-pw,
+.contents-pwck {
+  margin-bottom: var(--spacing-small);
+}
+.contents__submit__click {
+  font-size: var(--font-small);
+}
+.contents__line {
+  position: relative;
+  margin-top: var(--spacing-medium);
+  border-top: 1px solid var(--color-dark-white);
+  padding-bottom: var(--spacing-medium);
+}
+.contents__line-or {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  margin-left: -12px;
+  width: 24px;
+  font-size: var(--font-small);
+  color: var(--color-light-grey);
+  background-color: var(--color-white);
+  text-align: center;
+}
+/* sns login(수정필요) */
+.contents__sns {
+  width: 100%;
+}
+.sns-naver,
+.sns-kakao,
+.sns-google {
+  height: 50px;
+  border: 1px solid var(--color-dark-white);
+  margin-bottom: var(--spacing-small);
+}
+
+.contents__account {
+  color: var(--color-dark-grey);
+  text-align: center;
+  font-size: var(--font-micro);
+  font-weight: var(--weight-bold);
+  margin: 0;
+  margin-top: 32px;
+}
+.contents__account-link {
+  color: var(--color-blue);
+  font-weight: var(--weight-bold);
+}
+.contents__account-link:hover {
+  text-decoration: underline;
+}
